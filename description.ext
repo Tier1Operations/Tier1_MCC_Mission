@@ -1,0 +1,107 @@
+
+// MCC stuff.
+#include "mccLite_defines.hpp"
+
+author="Tier1Ops";
+overviewPicture = "Tier1\tier1_logo.paa"; //"data\mcc_loadingScreen.paa";
+overviewText = "Tier1Ops Mission Template based on MCC 4";
+
+
+onLoadName = "T1 Mission Template";
+loadScreen = "Tier1\tier1_logo.paa";
+onLoadMission = "T1 Mission";
+
+
+
+respawn = "BASE";
+respawndelay = 1;
+RespawnDialog = 0;
+disabledAI = 1;
+saving = 0;
+
+
+// Auto connect Headless client
+// https://community.bistudio.com/wiki/Description.ext#joinUnassigned
+joinUnassigned = 0;
+
+// included in MCC defines.hpp
+// ------------------------------
+// Sounds
+//#include "sounds.hpp"
+
+// Kegetys Spectator Script
+//#include "spectator\spectating.hpp"
+
+// Tier1 stuff
+//#include "Tier1\tier1_defines.hpp"
+// ------------------------------
+
+//class RscTitles 
+//{
+// #include "dialogs\namesright.hpp"
+//};
+
+// BTC Revive stuff.
+#include "=BTC=_revive\=BTC=_respawn.h"
+
+//	Crew HUD stuff.
+#include "Tier1\VehicleHud\dialog.hpp"
+
+
+class Header
+{
+	gameType = COOP; //game type
+	minPlayers = 1; //min # of players the mission supports
+	maxPlayers = 69; //max # of players the mission supports
+	//playerCountMultipleOf = 1; //OFP:Elite option.
+};
+
+
+class Params
+{
+	class paramZero	
+	{
+		title = "Would you like to enable TPWCAS_A3 AI Suppression?";
+		values[] = {0,1};
+		texts[] = {"Off","On (Default)"};
+		default = 1;
+		code = "tpwcas_enable = %1";
+	};
+	
+	class paramOne
+	{
+		title = "Which TPWCAS_A3 AI Suppression Mode would you like to enable?";
+		values[] = {2,3};
+		texts[] = {"AI and Players (Default)","AI only"};
+		default = 2;
+		code = "tpwcas_mode = %1";
+	};
+
+	class paramTwo
+	{
+		title = "How many lives should the players get?";
+		values[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20};
+		texts[] = {"Infinite (Default)", "1 (No respawn)", "2", "3", "4", "5", "6", "7", "8", "9", "10", "15", "20"};
+		default = 0;
+		code = "BTC_availableLives = %1";
+	};
+	
+	class paramThree
+	{
+		title = "Would you like to enable auto garbage collection process?";
+		values[] = {1, 0};
+		texts[] = {"Yes (Default)", "No"};
+		default = 1;
+		code = "T1_garbageCollection = %1";
+	};
+	
+	class paramFour
+	{
+		title = "Which Revive system should be used?";
+		values[] = {1, 0};
+		texts[] = {"BTC-Revive (Default)", "FAR-Revive"};
+		default = 1;
+		code = "T1_Revive = %1";
+	};
+};
+

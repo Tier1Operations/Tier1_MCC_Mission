@@ -1,0 +1,36 @@
+
+
+//	Crew HUD stuff.
+//#include "Tier1\VehicleHud\dialog.hpp"
+#include "VehicleHud\dialog.hpp"
+
+class RscTitles 
+{
+	//#include "Tier1\VehicleHud\hud_titles.sqf"
+	#include "VehicleHud\hud_titles.sqf"
+	titles[]={"img"};
+
+	class img
+	{
+		idd=-1;
+		movingEnable=0;
+		duration=5;  
+		fadein=2; 
+        fadeout = 1;		  
+		name="img";
+		controls[]={"GR"};
+
+		class GR : MCC_RscPicture
+		{
+			style=48;
+			text= "title.jpg";
+			sizeEx = 0.4;
+			x=0.25;
+            y=0.3;
+            w=0.5;
+            h=0.4;
+        };
+	};
+};
+
+
