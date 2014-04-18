@@ -40,14 +40,15 @@ tpwcas_fnc_main_loop =
 					{
 						_unit allowFleeing 0;
 					};
-							  
+				
+					//-------------------------------------------------------------------------------------------------------------
 					//SET INITIAL PARAMETERS FOR EACH UNIT   
 					if (_stanceregain == -1 ) then
 					{ 
 						//SET ASR AI SKILLS IF ASR AI IS RUNNNING
-						if (!isNil "asr_ai3_skillsets_fnc_SetUnitSkill") then 
+						if (!isNil "asr_ai3_sysaiskill_fnc_setUnitSkill") then 
 						{
-							[_unit] call asr_ai3_skillsets_fnc_SetUnitSkill;
+							[_unit] call asr_ai3_sysaiskill_fnc_setUnitSkill;
 						};
 						
 						_unit setVariable ["tpwcas_originalaccuracy", _unit skill "aimingAccuracy"];      
@@ -58,14 +59,14 @@ tpwcas_fnc_main_loop =
 						//_unit setVariable ["tpwcas_orgbehaviour", behaviour _unit];
 						_unit setVariable ["tpwcas_stance", "auto"];
 					};    
-					 
+		
+					//-------------------------------------------------------------------------------------------------------------
 					//RESET UNIT SETTINGS IF UNSUPPRESSED   
 					if ( time >= _stanceregain  ) then        
 					{ 
 						//if ( !( _unit getVariable "tpwcas_stance" == "auto") || !(_unit getVariable ["tpwcas_supstate",0] == 0) ) then 
 						if ( !(_unit getVariable ["tpwcas_supstate",0] == 0) ) then 
-						{
-						
+						{						
 							//Reset behaviour - after bullet detection behaviour should at least be aware							
 							if ( ( _unit getVariable ["tpwcas_supstate", 0] == 3 ) && { !(isPlayer (leader _unit)) } ) then 
 							{
@@ -84,13 +85,24 @@ tpwcas_fnc_main_loop =
 							//RESET UNIT STANCE
 							if ( (_unit getVariable ["tpwcas_stance", -1]) in ["Middle","Down"]) then 
 							{
-								_unit setUnitPos "auto"; 
+								if (_unit getVariable ["tpwcas_inbuilding", false] ) then
+								{
+									_unit setUnitPos "UP"; 
+								}
+								else
+								{
+									_unit setUnitPos "auto"; 
+								};
+								
 								// workaround to bypass AI getting stuck in lowering/raising weapon mode
 								// often occurs when moving from setUnitPos "Middle" to setUnitPos "Auto" again
 								if ( _unit getVariable ["tpwcas_stance", "Auto"] == "Middle" ) then 
 								{
-									_unit playMoveNow "AmovPercMevaSrasWrflDf_AmovPknlMstpSrasWrflDnon";	
+									//_unit playMoveNow "AmovPercMevaSrasWrflDf_AmovPknlMstpSrasWrflDnon";	
+									_unit playMoveNow "";
+									//_unit setUnitPos "auto"; 									
 								};
+								
 								_unit setVariable ["tpwcas_stance", "auto"];
 							};
 		
@@ -111,21 +123,31 @@ tpwcas_fnc_main_loop =
 						};
 					};   
 
+					//-------------------------------------------------------------------------------------------------------------
 					if ( _unit getVariable ["tpwcas_process", 0] == 1 ) then 
 					{
 						if !(isPlayer _unit) then 
 						{
 							//UNIT CHANGES FOR DIFFERENT SUPPRESSION 
 							switch ( _unit getVariable "tpwcas_supstate" ) do  
-							{  
+							{  							
+								//------------------------------------------------------------------------------------------------------
 								case 1: //IF ANY BULLETS NEAR UNIT  
 								{
 									//CROUCH IF STANDING 
 									if ( stance _unit == "STAND" ) then
 									{
+										_unitPos = eyePos _unit;
+										//_objects = lineIntersectsWith [_unitPos, [(_unitPos select 0), (_unitPos select 1), (_unitPos select 2 ) + 5], objNull, objNull, true];
+				//player globalChat str [_objects, count _objects, typeOf (_objects select 0)];		
+										_inBuilding = lineIntersects [_unitPos, [(_unitPos select 0), (_unitPos select 1), (_unitPos select 2 ) + 5]];
+										if (  _inBuilding  ) then
+										{
+											_unit setVariable ["tpwcas_inbuilding", true];
+										};
 										_unit setUnitPos "Middle"; 
 										_unit setVariable ["tpwcas_stance", "Middle"];	
-									};										
+									};	
 
 									if ( ( behaviour _unit == "SAFE" ) && { !(isPlayer (leader _unit)) } ) then 									
 									{ 
@@ -135,6 +157,7 @@ tpwcas_fnc_main_loop =
 									};										
 								};  
 								  
+								//------------------------------------------------------------------------------------------------------
 								case 2: //IF ENEMY BULLETS NEAR UNIT  
 								{ 
 									//CROUCH IF NOT PRONE
@@ -142,12 +165,31 @@ tpwcas_fnc_main_loop =
 									{ 
 										//_cover = _unit getVariable ["tpwcas_cover", 0];
 										_coverregain = _unit getVariable ["tpwcas_coverregain", time];
+
+										if ( stance _unit == "STAND" ) then
+										{
+											_unitPos = eyePos _unit;
+											//_objects = lineIntersectsWith [_unitPos, [(_unitPos select 0), (_unitPos select 1), (_unitPos select 2 ) + 5], objNull, objNull, true];
+				//player globalChat str [_objects, count _objects, typeOf (_objects select 0)];		
+											_inBuilding = lineIntersects [_unitPos, [(_unitPos select 0), (_unitPos select 1), (_unitPos select 2 ) + 5]];
+											if (  _inBuilding  ) then 
+											{
+												_unit setVariable ["tpwcas_inbuilding", true];
+											};
+										};
 										
-										if ( ( time >= _coverregain) && { ( tpwcas_getcover == 1 ) } && { ( (_unit getVariable ["tpwcas_cover", 0]) == 0 ) } && { ( diag_fps > tpwcas_getcover_minfps ) } ) then 
+										if ( 
+												( time >= _coverregain) && 
+												{ ( tpwcas_getcover == 1 ) } && 
+												{ ( (_unit getVariable ["tpwcas_cover", 0]) == 0 ) } && 
+												{ ( diag_fps > tpwcas_getcover_minfps ) } &&
+												{ !(isPlayer (leader _unit)) } &&
+												{ !(_inBuilding) }
+											) then 
 										{
 											[_unit, 2] spawn tpwcas_fnc_find_cover;
 										};
-										
+
 										_unit setUnitPos "Middle"; 
 										_unit setVariable ["tpwcas_stance", "Middle"];
 									};										
@@ -169,13 +211,34 @@ tpwcas_fnc_main_loop =
 									_unit doWatch _shooter;
 								};  
 								  
+								//------------------------------------------------------------------------------------------------------
 								case 3: //IF UNIT IS SUPPRESSED BY MULTIPLE ENEMY BULLETS   
 								{ 
 									if !( stance _unit == "PRONE" ) then
 									{ 
 										_coverregain = _unit getVariable ["tpwcas_coverregain", time];
+
+										if ( stance _unit == "STAND" ) then
+										{
+											_unitPos = eyePos _unit;
+											//_objects = lineIntersectsWith [_unitPos, [(_unitPos select 0), (_unitPos select 1), (_unitPos select 2 ) + 5], objNull, objNull, true];
+				//player globalChat str [_objects, count _objects, typeOf (_objects select 0)];		
+											_inBuilding = lineIntersects [_unitPos, [(_unitPos select 0), (_unitPos select 1), (_unitPos select 2 ) + 5]];
+											if (  _inBuilding  ) then 
+											{
+												_unit setVariable ["tpwcas_inbuilding", true];
+											};
+										};
+
 										
-										if ( ( time >= _coverregain) && { ( tpwcas_getcover == 1 ) } && { ( (_unit getVariable ["tpwcas_cover", 0]) == 0 ) } && { ( diag_fps > tpwcas_getcover_minfps ) } ) then 
+										if ( 
+												( time >= _coverregain) && 
+												{ ( tpwcas_getcover == 1 ) } && 
+												{ ( (_unit getVariable ["tpwcas_cover", 0]) == 0 ) } && 
+												{ ( diag_fps > tpwcas_getcover_minfps ) } &&
+												{ !(isPlayer (leader _unit)) } &&
+												{ !(_inBuilding) }
+											) then 
 										{
 											[_unit, 2] spawn tpwcas_fnc_find_cover;
 										};
@@ -203,8 +266,10 @@ tpwcas_fnc_main_loop =
 							};
 						}
 						else
-						{
+						{						
+							//------------------------------------------------------------------------------------------------------
 							//PLAYER VISUAL CHANGES FOR DIFFERENT SUPPRESSION 
+							
 							switch ( _unit getVariable "tpwcas_supstate" ) do  
 							{
 								case 2: //IF ENEMY BULLETS NEAR PLAYER  
@@ -238,6 +303,7 @@ tpwcas_fnc_main_loop =
 							};
 							
 						};
+						//------------------------------------------------------------------------------------------------------
 						
 						//processed so reset value
 						_unit setVariable ["tpwcas_process", 0];

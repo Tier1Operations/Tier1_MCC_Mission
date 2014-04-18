@@ -58,9 +58,9 @@ if (isnil "MCC_allowedPlayers") then {MCC_allowedPlayers = ["all"]};
 //----------------------General settings---------------------------------------
 //Default AI skill
 if (isnil "MCC_AI_Skill") then {MCC_AI_Skill = 0.8}; 
-if (isnil "MCC_AI_Aim") then {MCC_AI_Aim = 0.3}; 
 if (isnil "MCC_AI_Aim") then {MCC_AI_Aim = 0.05}; 
-if (isnil "MCC_AI_Command") then {MCC_AI_Command = 0.8}; 
+if (isnil "MCC_AI_Spot") then {MCC_AI_Spot	= 0.3}; 
+if (isnil "MCC_AI_Command") then {MCC_AI_Command = 0.6}; 
 
 //---------------------Name Tags---------------------------------------------------
 // Show friendly name tags and vhicles' crew info - default - off
@@ -340,7 +340,7 @@ MCC_fog_array = [
 		["4 - low",[0.25,25]], ["4 - medium",[0.25,45]],["4 - dense",[0.25,80]],
 		["5 - low",[0.4,25]], ["5 - medium",[0.4,45]],["5 - dense",[0.4,90]],
 		["6 - low",[0.6,25]], ["6 - medium",[0.6,50]],["6 - dense",[0.6,110]],
-		["7 - low",[0.8,25]], ["6 - medium",[0.8,50]],["6 - dense",[0.8,135]],
+		["7 - low",[0.8,25]], ["7 - medium",[0.8,50]],["7 - dense",[0.8,135]],
 		["Full - low",[1,25]], ["Full - medium",[1,60]],["Full - dense",[1,160]]
 	];
 
@@ -434,8 +434,6 @@ MCC_evacFlyInHight_index = 1;
 MCC_evacVehicles = [];
 MCC_evacVehicles_index = 0;
 MCC_evacVehicles_last = 0;
-
-
 
 MCC_UMunitsNames = [];
 MCC_UMUnit = 0;
@@ -652,34 +650,45 @@ if ( isServer ) then
 	//create logics
 
 	//server
-	_dummyGroup = creategroup civilian; 
+	_dummyGroup = creategroup sideLogic; 
 	_dummy = _dummyGroup createunit ["Logic", [0, 90, 90],[],0.5,"NONE"];	//Logic Server
 	_name = "server";
+	_dummy setvariable ["text","server"];
+	_dummy setvariable ["mccIgnore",true];
 	call compile (_name + " = _dummy");
 	publicVariable _name;
 	
 	//CURATOR
 	_dummy = _dummyGroup createunit ["ModuleCurator_F", [0, 90, 90],[],0.5,"NONE"];	//Logic Server
-	_dummy setvariable ["Addons",2,true];
 	_name = "MCC_curator";
+	_dummy setvariable ["text","MCC_curator"];
+	_dummy setvariable ["mccIgnore",true];
+	_dummy setvariable ["Addons",2,true];	
+	_dummy setvariable ["vehicleinit","_this setvariable ['Addons',2,true];"];
 	call compile (_name + " = _dummy");
 	publicVariable _name;
-
+	
 	//west
 	_dummy = _dummyGroup createunit ["SideBLUFOR_F", [0, 90, 90],[],0.5,"NONE"];	//Logic Server
 	_name = "MCC_sideWest";
+	_dummy setvariable ["text","MCC_sideWest"];
+	_dummy setvariable ["mccIgnore",true];
 	call compile (_name + " = _dummy");
 	publicVariable _name;
 	
 	//East
 	_dummy = _dummyGroup createunit ["SideOPFOR_F", [0, 90, 90],[],0.5,"NONE"];	//Logic Server
 	_name = "MCC_sideEast";
+	_dummy setvariable ["text","MCC_sideEast"];
+	_dummy setvariable ["mccIgnore",true];
 	call compile (_name + " = _dummy");
 	publicVariable _name;
 	
 	//Resistance
 	_dummy = _dummyGroup createunit ["SideResistance_F", [0, 90, 90],[],0.5,"NONE"];	//Logic Server
 	_name = "MCC_sideResistance";
+	_dummy setvariable ["text","MCC_sideResistance"];
+	_dummy setvariable ["mccIgnore",true];
 	call compile (_name + " = _dummy");
 	publicVariable _name;
 	
@@ -703,6 +712,7 @@ if ( isServer ) then
 	//Create a center to stand on while respawn is off
 	private "_dummyObject";
 	_dummyObject = "Land_Pier_F" createvehicle [-9999, -9999, -1];
+	_dummyObject setVariable ["mccIgnore",true];
 	_dummyObject setpos [-9999, -9999, -1];
 		
 	// Handler code for the server for MP purpose
@@ -864,11 +874,7 @@ if ( isServer ) then
 		{
 			MCC_iniDBenabled = false; 
 		};
-		publicVariable "MCC_iniDBenabled"
-
-
-
-
+		publicVariable "MCC_iniDBenabled";
 	};
 };
 
@@ -885,15 +891,6 @@ if !( MCC_Lite ) then
 
 		player sideChat "iniDB isn't running. ROLE SELECTION WILL NOT WORK!!!";
 	};
-
-
-
-
-
-
-
-
-
 	//******************************************************************************************************************************
 	//											CP Stuff
 	//******************************************************************************************************************************	
@@ -906,23 +903,17 @@ if !( MCC_Lite ) then
 
 
 
-	CP_maxPlayers		= 100; 
-	CP_maxSquads		= 20; 
-	CP_westSpawnPoints 	= [];
-	CP_eastSpawnPoints	= [];
-	CP_guarSpawnPoints	= [];
+	if (isnil "CP_maxPlayers") then {CP_maxPlayers		= 100}; 
+	if (isnil "CP_maxSquads") then {CP_maxSquads		= 20}; 
+	if (isnil "CP_westSpawnPoints") then {CP_westSpawnPoints 	= []};
+	if (isnil "CP_eastSpawnPoints") then {CP_eastSpawnPoints	= []};
+	if (isnil "CP_guarSpawnPoints") then {CP_guarSpawnPoints	= []};
 
 	CP_dialogInitDone = true; 				//define if dialog is been initialize
-
-
-
-
-	CP_weaponAttachments = ["","",""];	
-	CP_defaultLevel = [1,0];
-	CP_activated = false;
-
-	missionnamespace setVariable ["CP_activated", false]; 			//CP activated on MCC mode
-
+	if (isnil "CP_weaponAttachments") then {CP_weaponAttachments = ["","",""]};	
+	if (isnil "CP_defaultLevel") then {CP_defaultLevel = [1,0]};
+	if (isnil "CP_activated") then {CP_activated = false};
+	if (isnil "CP_defaultGroups") then {CP_defaultGroups = ["Alpha","Bravo","Charlie","Delta"]}; 
 	"CP_activated" addPublicVariableEventHandler 
 	{
 		if(CP_activated && !isDedicated) then
@@ -1070,13 +1061,6 @@ if ( MCC_isLocalHC ) then
 if ( !( isDedicated) && !(MCC_isLocalHC) ) then
 {
 	waituntil {!(IsNull (findDisplay 46))};
-
-
-
-
-
-
-
 	
 	// Teleport to team on Alt + T
 	MCC_teleportToTeam = true;	
@@ -1092,7 +1076,10 @@ if ( !( isDedicated) && !(MCC_isLocalHC) ) then
 
 	MCC_groupLocalWP = [];
 	MCC_groupLocalWPLines = []; 
-	
+					
+	//Save gear EH and re-add MCC action after respawn
+	if(local player) then {player addEventHandler ["killed",{player execVM MCC_path + "mcc\general_scripts\save_gear.sqf";}];};
+
 	if !(MCC_Lite) then 
 	{
 		//Opening status radio
@@ -1105,19 +1092,11 @@ if ( !( isDedicated) && !(MCC_isLocalHC) ) then
 	
 		//Add MCC Console action menu
 		_null = player addaction ["<t color=""#FFCC00"">Open MCC Console</t>", MCC_path + "mcc\general_scripts\console\conoleOpenMenu.sqf",[0],-1,false,true,"teamSwitch",MCC_consoleString];
-			
-		//Save gear EH
-		if(local player) then {player addEventHandler ["killed",{player execVM MCC_path + "mcc\general_scripts\save_gear.sqf";}];};
 		
 		//Handle Heal
 		if(local player) then {player addEventHandler ["HandleHeal",{if (isplayer (_this select 1) && ("Medikit" in (items(_this select 1)))) then {(_this select 1) addrating 200; false}}];};
 
-
 		//========= player Loops (for saving gear/name tag exc)=================================
-
-
-
-
 
 		//Handle CP stuff
 		MCC_CPplayerLoop = compile preprocessFile format ["%1mcc\general_scripts\loops\mcc_CPplayerLoop.sqf",MCC_path];
@@ -1128,28 +1107,24 @@ if ( !( isDedicated) && !(MCC_isLocalHC) ) then
 	MCC_NameTagsPlayerLoop = compile preprocessFile format ["%1mcc\general_scripts\loops\MCC_NameTagsPlayerLoop.sqf",MCC_path];
 	[] spawn MCC_NameTagsPlayerLoop;
 
-
-	/*		
-	//===============Delete Groups (server and HC client only)====================
-	if (isServer || MCC_isLocalHC) then 
+//===============Delete Groups (server and HC client only)====================
+if (isServer || MCC_isLocalHC) then 
+{
+	[] spawn 
 	{
-		[] spawn 
+		while {true} do
 		{
-			while {true && !CP_activated} do
+			sleep 60; 
 			{
-				{if (({alive _x} count units _x) == 0) then {deleteGroup _x}} foreach allGroups;
-				sleep 60; 
-
-
-
-
-
-
-			};
+				if ((({alive _x} count units _x) == 0) && !(_x getVariable ["MCC_CPGroup",false])) then 
+				{
+					deleteGroup _x;
+				};
+			} foreach allGroups;			
 		};
 	};
+};
 
-	*/
 	//============== Namspace saves=================
 	MCC_saveNames = profileNamespace getVariable "MCC_save";
 	if (isnil "MCC_saveNames") then {
@@ -1197,9 +1172,10 @@ if ( !( isDedicated) && !(MCC_isLocalHC) ) then
 };		
 
 //============= Init MCC done===========================
-
-
-
+if(CP_activated && !isDedicated) then
+{
+	_null=[] execVM CP_path + "scripts\player\player_init.sqf"
+};
 
 MCC_initDone = true; 
 //finishMissionInit;

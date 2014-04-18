@@ -35,6 +35,10 @@ if (isNil "tpwcas_running") then { 	tpwcas_running = false;};
 if ( tpwcas_running ) exitWith { diag_log "EXIT: tpwcas already running" };
 tpwcas_running = true;
 
+	if (isServer || isNil "tpwcas_mode") then {
+		tpwcas_mode = 3;
+		};
+
 	//////////////////////////////////////////////////////////////////	
 	// Set default values in case not found in userconfig file
 	

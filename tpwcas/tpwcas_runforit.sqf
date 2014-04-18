@@ -49,7 +49,7 @@ tpwcas_fnc_run_for_it =
 	if (tpwcas_debug > 0) then 
 	{		
 		_debug_flag = "Flag_FD_Red_F" createVehicle _coverPosition;
-		_debug_flag setPosATL _coverPosition;
+		_debug_flag setPosATL [_coverPosition select 0, _coverPosition select 1, getTerrainHeightASL _coverPosition];
 	};
 		
 	doStop _unit;
