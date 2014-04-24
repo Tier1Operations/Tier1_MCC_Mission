@@ -84,24 +84,20 @@ if !mcc_isloading then
 	MCC_AI_Command = _AiSkill; 
 	publicvariable "MCC_AI_Command"; 
 	
-	// The following entries are not available in MCC-Lite
-	if !(MCC_Lite) then
-	{
-		MCC_consoleGPSIndex = lbCurSel MCC_MSCONSOLEGPS;
-		MCC_ConsoleOnlyShowUnitsWithGPS = if ((lbCurSel MCC_MSCONSOLEGPS) == 0) then {true} else {false};				//CONSOLE
-		publicvariable "MCC_ConsoleOnlyShowUnitsWithGPS";
-		
-		MCC_consoleShowFriendsIndex = lbCurSel MCC_MSCONSOLESHOWFRIENDS;
-		MCC_ConsoleDrawWP = if ((lbCurSel MCC_MSCONSOLESHOWFRIENDS) == 0) then {true} else {false};						//CONSOLE
-		publicvariable "MCC_ConsoleDrawWP";
-		
-		MCC_ConsolePlayersCanSeeWPonMap = if ((lbCurSel MCC_MSCONSOLESHOWFRIENDS) == 0) then {true} else {false};		//CONSOLE
-		publicvariable "MCC_ConsolePlayersCanSeeWPonMap";
-		
-		MCC_consoleCommandAIIndex = lbCurSel MCC_MSCONSOLECOMMANDAI;
-		MCC_ConsoleCanCommandAI = if ((lbCurSel MCC_MSCONSOLECOMMANDAI) == 0) then {true} else {false};					//CONSOLE
-		publicvariable "MCC_ConsoleCanCommandAI";
-	};
+	MCC_consoleGPSIndex = lbCurSel MCC_MSCONSOLEGPS;
+	MCC_ConsoleOnlyShowUnitsWithGPS = if ((lbCurSel MCC_MSCONSOLEGPS) == 0) then {true} else {false};				//CONSOLE
+	publicvariable "MCC_ConsoleOnlyShowUnitsWithGPS";
+	
+	MCC_consoleShowFriendsIndex = lbCurSel MCC_MSCONSOLESHOWFRIENDS;
+	MCC_ConsoleDrawWP = if ((lbCurSel MCC_MSCONSOLESHOWFRIENDS) == 0) then {true} else {false};						//CONSOLE
+	publicvariable "MCC_ConsoleDrawWP";
+	
+	MCC_ConsolePlayersCanSeeWPonMap = if ((lbCurSel MCC_MSCONSOLESHOWFRIENDS) == 0) then {true} else {false};		//CONSOLE
+	publicvariable "MCC_ConsolePlayersCanSeeWPonMap";
+	
+	MCC_consoleCommandAIIndex = lbCurSel MCC_MSCONSOLECOMMANDAI;
+	MCC_ConsoleCanCommandAI = if ((lbCurSel MCC_MSCONSOLECOMMANDAI) == 0) then {true} else {false};					//CONSOLE
+	publicvariable "MCC_ConsoleCanCommandAI";
 	
 	MCC_nameTagsIndex = lbCurSel MCC_IDCNAMETAGS;
 	MCC_nameTags = if ((lbCurSel MCC_IDCNAMETAGS) == 0) then {false} else {true};									//NameTags

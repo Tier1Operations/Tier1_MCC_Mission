@@ -20,7 +20,7 @@ disableSerialization;
 
 _action = _this select 0;
 _mccdialog = (uiNamespace getVariable "MCC_groupGen_Dialog");
-
+MCC_GUI1initDone = false; 
 //------------------------------------------------------------------------------------ Close all open boxes -------------------------------------------------------------------------------
 for "_i" from 500 to 518 step 1 do 
 {
@@ -159,7 +159,7 @@ if (_action == 4) exitWith
 	_control = (_mccdialog displayCtrl 500);
 	_control ctrlShow true;
 
-// Hide "Add" button	// Ollem: hide button for MCC_Lite (check: optionally determine if Console available else hide)
+	// Hide "Add" button when MCC Console not available in mission
 	if (MCC_Lite) then { ctrlShow [27, false]; };
 	//--------------------------------------CAS--------------------------------------------------------------------------
 
@@ -187,7 +187,7 @@ if (_action == 5) exitWith
 	_control = (_mccdialog displayCtrl 505);
 	_control ctrlShow true;
 	
-	// Hide "Add" button	// Ollem: hide button for MCC_Lite (check: optionally determine if Console available else hide)
+	// Hide "Add" button when MCC Console not available in mission
 	if (MCC_Lite) then { ctrlShow [27, false]; };
 	//---------------------------------Artillery----------------------------------------------------------------------------
 	_comboBox = (_mccdialog displayCtrl 30);		// Artillery Type
@@ -236,7 +236,7 @@ if (_action == 6) exitWith
 	{
 		_displayname =  _x;
 		_index = _comboBox lbAdd _displayname;
-	} foreach ["Infantry", "Vehicles", "Tracked", "Motorcycle", "Helicopter", "Fixed-wing", "Ship","D.O.C", "Ammo"];
+	} foreach ["Infantry", "Vehicles", "Tracked/Static", "Motorcycle", "Helicopter", "Fixed-wing", "Ship", "Ammo"];
 	_comboBox lbSetCurSel MCC_class_index;
 
 	_comboBox = _mccdialog displayCtrl MCC_GGUNIT_TYPE;		
@@ -699,8 +699,7 @@ if (_action == 15) exitWith
 	#define MCCGRASSDENSITY 1007
 	
 	//----------------------------------------------------------Client Side settings----------------------------------------------------------------------------
-	MCC_GUI1initDone = false; 
-	
+
 	_comboBox = _mccdialog displayCtrl MCCGRASSDENSITY;		//fill combobox Grass
 	lbClear _comboBox;
 	{
@@ -727,8 +726,9 @@ if (_action == 16) exitWith
 	_control = (_mccdialog displayCtrl 517);
 	_control ctrlShow true;
 
-	// Hide "Add" button	// Ollem: hide button for MCC_Lite (check: optionally determine if Console available else hide)
+	// Hide "Add" button when MCC Console not available in mission
 	if (MCC_Lite) then { ctrlShow [27, false]; };
+	
 	#define MCC_AIRDROPTYPE 1031
 	#define MCC_airdropArray 1033
 	
@@ -768,3 +768,6 @@ if (_action == 17) exitWith
 	} foreach ["All","All Units", "Man", "Car", "Tank", "Air", "ReammoBox","Markers","Lights","N/V","Bodies","Flashlights Add/Delete"];
 	_comboBox lbSetCurSel 0;
 };
+
+sleep 1; 
+MCC_GUI1initDone = true; 

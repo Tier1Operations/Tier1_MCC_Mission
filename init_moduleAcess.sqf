@@ -14,38 +14,42 @@ _logic setpos [1000,10,0];
 
 waituntil {alive player && MCC_initDone};
 
-player removeAction mcc_actionInedx;			//remove previously added action
+if ( MCC_isMode ) then 
+{
 
- if (isnil {_logic getvariable "names"}) then {_names = false} else {  //who autohrized to access the module
-	_names = true;
-	_namesList = _logic getvariable "names"
-	};	
-_logic setvariable ["names",_namesList,true];
+	player removeAction mcc_actionInedx;			//remove previously added action
 
-_synced = synchronizedobjects _logic;									//Who synced with the module
+	 if (isnil {_logic getvariable "names"}) then {_names = false} else {  //who autohrized to access the module
+		_names = true;
+		_namesList = _logic getvariable "names";
+		};	
+	_logic setvariable ["names",_namesList,true];
 
-if (_names || (count _synced > 0)) then 								//We have autorized personal only
-	{							
-		if (((getPlayerUID player) in _namesList) || (player in _synced) || (serverCommandAvailable "#logout"))then 
-			{
-				mcc_actionInedx = player addaction ["> Mission generator", MCC_path + "mcc\dialogs\mcc_PopupMenu.sqf",[], 0,false, false, "teamSwitch","vehicle _target == vehicle _this"];
-				player setvariable ["MCC_allowed",true,true]; 
-			} 
-			else
-			{
-				player setvariable ["MCC_allowed",false,true];
-			}
-	};
-	
-while {true} do 												//Case Admin DC
-	{														
-		sleep 5;
-		if (serverCommandAvailable "#logout") then 
-			{
-				if !(player getvariable "MCC_allowed") then
-					{
-						mcc_actionInedx = player addaction ["> Mission generator", MCC_path + "mcc\dialogs\mcc_PopupMenu.sqf",[], 0,false, false, "teamSwitch","vehicle _target == vehicle _this"];
-						player setvariable ["MCC_allowed",true,true]; 
-					};
-			};
-	};
+	_synced = synchronizedobjects _logic;									//Who synced with the module
+
+	if (_names || (count _synced > 0)) then 								//We have autorized personal only
+		{							
+			if (((getPlayerUID player) in _namesList) || (player in _synced) || (serverCommandAvailable "#logout"))then 
+				{
+					mcc_actionInedx = player addaction ["> Mission generator", MCC_path + "mcc\dialogs\mcc_PopupMenu.sqf",[], 0,false, false, "teamSwitch","vehicle _target == vehicle _this"];
+					player setvariable ["MCC_allowed",true,true]; 
+				} 
+				else
+				{
+					player setvariable ["MCC_allowed",false,true];
+				}
+		};
+		
+	while {true} do 												//Case Admin DC
+		{														
+			sleep 5;
+			if (serverCommandAvailable "#logout") then 
+				{
+					if !(player getvariable "MCC_allowed") then
+						{
+							mcc_actionInedx = player addaction ["> Mission generator", MCC_path + "mcc\dialogs\mcc_PopupMenu.sqf",[], 0,false, false, "teamSwitch","vehicle _target == vehicle _this"];
+							player setvariable ["MCC_allowed",true,true]; 
+						};
+				};
+		};
+};

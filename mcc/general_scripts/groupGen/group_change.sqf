@@ -49,7 +49,6 @@ for "_x" from 3018 to 3020 step 1 do
 };
 ctrlShow [MCC_GroupGenCurrentGroup_IDD,_show];
 
-player sidechat str _show;
 if (_show) then 
 {
 	(_mccdialog displayCtrl MCC_GGSAVE_GROUPIDC) ctrlSetTooltip "Save the group as a custom group";
@@ -194,16 +193,11 @@ if (_action == 0) exitWIth
 					ctrlShow [MCC_GGUNIT_EMPTYTITLE,true];
 				};
 				
-				case 7:	//DOC
-				{
-					_groupArray = GEN_DOC1;
-					ctrlShow [MCC_GGUNIT_EMPTY,false];
-					ctrlShow [MCC_GGUNIT_EMPTYTITLE,false];
-				};
-				
-				case 8:	//AMMO
+				case 7:	//AMMO
 				{
 					_groupArray = U_AMMO;
+					MCC_isEmpty = true; 
+					ctrlShow [MCC_GGADDIDC,false];
 					ctrlShow [MCC_GGUNIT_EMPTY,false];
 					ctrlShow [MCC_GGUNIT_EMPTYTITLE,false];
 				};
@@ -212,9 +206,9 @@ if (_action == 0) exitWIth
 		_comboBox = _mccdialog displayCtrl UNIT_CLASS;		
 		lbClear _comboBox;
 		{
-			_displayname = if (_type == 7) then {format ["%1",(_x select 3)]} else {format ["%1",(_x select 3) select 0]};
+			_displayname = format ["%1",(_x select 3) select 0];
 			_index = _comboBox lbAdd _displayname;
-			if !(_type in [0,7,8]) then {_comboBox lbsetpicture [_index, (_x select 3) select 1]};
+			if !(_type in [0,7]) then {_comboBox lbsetpicture [_index, (_x select 3) select 1]};
 		} foreach _groupArray;
 		_comboBox lbSetCurSel 0;
 		};
@@ -265,6 +259,13 @@ if (_action == 1) then
 				{
 					_groupArray = U_GEN_SHIP;
 				};
+				
+				case 7:	//AMMO
+				{
+					_groupArray = U_AMMO;
+					ctrlShow [MCC_GGUNIT_EMPTY,false];
+					ctrlShow [MCC_GGUNIT_EMPTYTITLE,false];
+				};
 		};
 	_dummy = (_groupArray select (lbCurSel UNIT_CLASS)) select 1;
 	
@@ -305,7 +306,7 @@ if ((_action ==3)&& (MCC_type_index != lbCurSel MCC_GGUNIT_TYPE)) exitWIth						
 		{
 			_displayname =  _x;
 			_index = _comboBox lbAdd _displayname;
-		} foreach ["Infantry", "Vehicles", "Tracked/Static", "Motorcycle", "Helicopter", "Fixed-wing", "Ship"];
+		} foreach ["Infantry", "Vehicles", "Tracked/Static", "Motorcycle", "Helicopter", "Fixed-wing", "Ship", "Ammo"];
 		_comboBox lbSetCurSel 0; //MCC_class_index;	
 	};
 };	
